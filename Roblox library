@@ -1,0 +1,136 @@
+-- SimpleX UI Library
+
+local SimpleX = {}
+
+-- Function to create a visually appealing frame with a title and background theme
+function SimpleX.CreateLib(title, theme, parent)
+    parent = parent or game.Players.LocalPlayer.PlayerGui
+    
+    local library = Instance.new("Frame")
+    library.Name = "SimpleXLib"
+    library.Size = UDim2.new(0, 300, 0, 200)  -- Updated size to medium
+    library.Position = UDim2.new(0.5, -150, 0.5, -100)  -- Adjusted position
+    
+    local backgroundColor
+    local textColor
+    
+    if theme == "DarkTheme" then
+        backgroundColor = Color3.fromRGB(30, 30, 30)
+        textColor = Color3.new(1, 1, 1)
+    elseif theme == "BloodTheme" then
+        backgroundColor = Color3.fromRGB(80, 0, 0)
+        textColor = Color3.new(1, 1, 1)
+    else
+        backgroundColor = Color3.fromRGB(255, 255, 255)
+        textColor = Color3.new(0, 0, 0)
+    end
+    
+    library.BackgroundColor3 = backgroundColor
+    library.BorderSizePixel = 0
+    library.Parent = parent
+
+    local titleFrame = Instance.new("Frame")
+    titleFrame.Size = UDim2.new(1, 0, 0, 20)
+    titleFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    titleFrame.Position = UDim2.new(0, 0, 0, 0)  -- Updated position
+    titleFrame.Parent = library
+
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Name = "TitleLabel"
+    titleLabel.Size = UDim2.new(1, 0, 1, 0)
+    titleLabel.Position = UDim2.new(0, 0, 0, 0)
+    titleLabel.Text = title or "SimpleX Library"
+    titleLabel.BackgroundColor3 = titleFrame.BackgroundColor3
+    titleLabel.TextColor3 = textColor
+    titleLabel.Font = Enum.Font.SourceSansBold
+    titleLabel.Parent = titleFrame
+
+    -- Exit Button
+    local exitButton = Instance.new("TextButton")
+    exitButton.Name = "ExitButton"
+    exitButton.Size = UDim2.new(0, 20, 0, 20)
+    exitButton.Position = UDim2.new(1, -20, 0, 0)
+    exitButton.BackgroundColor3 = titleFrame.BackgroundColor3
+    exitButton.Text = "X"
+    exitButton.TextColor3 = textColor
+    exitButton.Font = Enum.Font.SourceSansBold
+    exitButton.Parent = titleFrame
+    exitButton.MouseButton1Click:Connect(function()
+        library:Destroy()  -- Close the library when the exit button is clicked
+    end)
+
+    -- Cool Notification
+    local notification = Instance.new("TextLabel")
+    notification.Name = "Notification"
+    notification.Size = UDim2.new(1, 0, 0, 20)
+    notification.Position = UDim2.new(0, 0, -20, 0)
+    notification.Text = "SimpleX Library Loaded!"
+    notification.BackgroundColor3 = Color3.fromRGB(0, 120, 255)  -- Adjust color as needed
+    notification.TextColor3 = Color3.new(1, 1, 1)
+    notification.Font = Enum.Font.SourceSansBold
+    notification.Parent = library
+
+    wait(2)  -- Display notification for 2 seconds
+    notification:Destroy()
+
+    -- Sections
+    local sections = {}
+    library.Sections = sections
+
+    function library:NewSection(sectionName)
+        local section = Instance.new("Frame")
+        section.Name = sectionName
+        section.Size = UDim2.new(1, 0, 1, 0)
+        section.Position = UDim2.new(0, 0, 0, 0)
+        section.BackgroundColor3 = backgroundColor
+        section.Visible = false
+        section.Parent = library
+
+        sections[sectionName] = section
+
+        return section
+    end
+
+    function library:SwitchSection(sectionName)
+        for _, sec in pairs(sections) do
+            sec.Visible = false
+        end
+
+        if sections[sectionName] then
+            sections[sectionName].Visible = true
+        end
+    end
+
+    return library
+end
+
+-- Function to create a button within a section
+function SimpleX.NewButton(section, buttonText, buttonInfo, scriptFunction)
+    local buttonFrame = SimpleX.CreateLib(buttonText .. "ButtonFrame", "BloodTheme", section)
+    
+    local buttonTextLabel = Instance.new("TextLabel")
+    buttonTextLabel.Name = buttonText .. "ButtonText"
+    buttonTextLabel.Size = UDim2.new(1, 0, 0, 20)
+    buttonTextLabel.Position = UDim2.new(0, 0, 0, 0)
+    buttonTextLabel.Text = buttonText or "Button"
+    buttonTextLabel.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
+    buttonTextLabel.TextColor3 = Color3.new(1, 1, 1)
+    buttonTextLabel.Font = Enum.Font.SourceSansBold
+    buttonTextLabel.Parent = buttonFrame
+
+    local buttonInfoLabel = Instance.new("TextLabel")
+    buttonInfoLabel.Name = buttonText .. "ButtonInfo"
+    buttonInfoLabel.Size = UDim2.new(1, 0, 0, 20)
+    buttonInfoLabel.Position = UDim2.new(0, 0, 1, -20)
+    buttonInfoLabel.Text = buttonInfo or "Info"
+    buttonInfoLabel.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
+    buttonInfoLabel.TextColor3 = Color3.new(1, 1, 1)
+    buttonInfoLabel.Font = Enum.Font.SourceSansBold
+    buttonInfoLabel.Parent = buttonFrame
+
+    buttonFrame.MouseButton1Click:Connect(scriptFunction)
+
+    return buttonFrame
+end
+
+return SimpleX
